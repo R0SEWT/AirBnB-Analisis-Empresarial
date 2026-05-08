@@ -216,3 +216,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Data layers — keep folder structure via .gitkeep, ignore payloads
+data/raw/*
+data/bronze/*
+data/silver/*
+data/gold/*
+!data/**/.gitkeep
+!data/**/README.md
+*.csv
+*.parquet
+*.xlsx
+*.feather
