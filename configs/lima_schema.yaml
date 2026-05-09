@@ -1,0 +1,46 @@
+city: lima
+country: peru
+source: inside_airbnb
+
+raw_file: data/raw/lima_listings.csv
+
+required_columns:
+  - id
+  - name
+  - host_id
+  - neighbourhood_cleansed
+  - room_type
+  - price
+  - minimum_nights
+  - number_of_reviews
+  - review_scores_rating
+  - availability_365
+  - calculated_host_listings_count
+
+bronze:
+  output: data/bronze/listings_bronze.parquet
+  price_currency_symbol: "$"
+
+silver:
+  output: data/silver/listings_silver.parquet
+  price_outlier_percentile: 99
+
+gold:
+  segments_output: data/gold/mart_listing_segments.parquet
+  profiles_output: data/gold/segment_profiles.csv
+
+segmentation:
+  k_min: 2
+  k_max: 7
+  random_state: 42
+  features:
+    log1p_scaled:
+      - price
+      - minimum_nights
+      - number_of_reviews
+      - calculated_host_listings_count
+    scaled:
+      - review_scores_rating
+      - availability_365
+    onehot:
+      - room_type
