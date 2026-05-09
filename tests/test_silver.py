@@ -10,12 +10,12 @@ def _make_bronze(prices, ratings=None, neighbourhoods=None):
             "id": range(n),
             "name": [f"listing_{i}" for i in range(n)],
             "host_id": range(n),
-            "neighbourhood_cleansed": neighbourhoods or (["miraflores"] * n),
+            "neighbourhood_cleansed": neighbourhoods or (["condesa"] * n),
             "room_type": ["Entire home/apt"] * n,
             "price": prices,
             "minimum_nights": [1] * n,
             "number_of_reviews": [10] * n,
-            "review_scores_rating": ratings or ([4.5] * n),
+            "reviews_per_month": ratings or ([1.5] * n),
             "availability_365": [200] * n,
             "calculated_host_listings_count": [1] * n,
         }
@@ -35,8 +35,8 @@ def test_silver_removes_duplicates():
     assert len(result) == 2
 
 
-def test_silver_imputes_rating():
-    ratings = [4.5, None, 4.0]
+def test_silver_imputes_reviews_per_month():
+    ratings = [1.5, None, 2.0]
     df = _make_bronze([50.0, 60.0, 70.0], ratings=ratings)
     result = run_silver(df)
-    assert result["review_scores_rating"].isna().sum() == 0
+    assert result["reviews_per_month"].isna().sum() == 0

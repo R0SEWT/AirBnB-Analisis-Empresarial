@@ -33,6 +33,11 @@ def run_bronze(df: pd.DataFrame | None = None) -> pd.DataFrame:
 
     bronze["price"] = _parse_price(bronze["price"])
 
+    has_raw = "neighbourhood" in bronze.columns
+    has_clean = "neighbourhood_cleansed" in bronze.columns
+    if has_raw and not has_clean:
+        bronze = bronze.rename(columns={"neighbourhood": "neighbourhood_cleansed"})
+
     if "last_review" in bronze.columns:
         bronze["last_review"] = pd.to_datetime(bronze["last_review"], errors="coerce")
 

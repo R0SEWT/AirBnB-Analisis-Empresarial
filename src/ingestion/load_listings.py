@@ -21,7 +21,7 @@ def load_raw(path: str | Path | None = None) -> pd.DataFrame:
         raise FileNotFoundError(
             f"Raw file not found: {raw_path}\n"
             "Download listings.csv from https://insideairbnb.com/get-the-data/ "
-            "(Lima, Peru) and place it at data/raw/lima_listings.csv"
+            "(Mexico City) and place it at data/raw/mexico_listings.csv"
         )
 
     df = pd.read_csv(raw_path, low_memory=False)

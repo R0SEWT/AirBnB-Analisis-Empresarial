@@ -35,17 +35,13 @@ def run_silver(df: pd.DataFrame | None = None) -> pd.DataFrame:
             silver["neighbourhood_cleansed"].str.strip().str.lower()
         )
 
-    if "review_scores_rating" in silver.columns:
-        median_by_neighbourhood = silver.groupby("neighbourhood_cleansed")[
-            "review_scores_rating"
-        ].transform("median")
-        silver["review_scores_rating"] = silver["review_scores_rating"].fillna(
-            median_by_neighbourhood
-        )
-        global_median = silver["review_scores_rating"].median()
-        silver["review_scores_rating"] = silver["review_scores_rating"].fillna(
-            global_median
-        )
+    for rating_col in ("review_scores_rating", "reviews_per_month"):
+        if rating_col in silver.columns:
+            median_by_neighbourhood = silver.groupby("neighbourhood_cleansed")[
+                rating_col
+            ].transform("median")
+            silver[rating_col] = silver[rating_col].fillna(median_by_neighbourhood)
+            silver[rating_col] = silver[rating_col].fillna(silver[rating_col].median())
 
     out_path = Path(schema["silver"]["output"])
     out_path.parent.mkdir(parents=True, exist_ok=True)

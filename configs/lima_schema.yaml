@@ -1,28 +1,28 @@
-city: lima
-country: peru
+city: mexico_city
+country: mexico
 source: inside_airbnb
 
-raw_file: data/raw/lima_listings.csv
+raw_file: data/bronze/mexico/listings.csv
 
 required_columns:
   - id
   - name
   - host_id
-  - neighbourhood_cleansed
+  - neighbourhood
   - room_type
   - price
   - minimum_nights
   - number_of_reviews
-  - review_scores_rating
+  - reviews_per_month
   - availability_365
   - calculated_host_listings_count
 
 bronze:
-  output: data/bronze/listings_bronze.parquet
+  output: data/bronze/mexico_listings_bronze.parquet
   price_currency_symbol: "$"
 
 silver:
-  output: data/silver/listings_silver.parquet
+  output: data/silver/mexico_listings_silver.parquet
   price_outlier_percentile: 99
 
 gold:
@@ -39,8 +39,8 @@ segmentation:
       - minimum_nights
       - number_of_reviews
       - calculated_host_listings_count
+      - reviews_per_month
     scaled:
-      - review_scores_rating
       - availability_365
     onehot:
       - room_type
