@@ -93,6 +93,27 @@ dashboards/airbnb_quality_dashboard.html
 dashboards/star_schema_view.html
 ```
 
+## Analitica de confianza y riesgo
+
+Para generar informacion dashboard-ready de confianza y riesgo:
+
+```bash
+python -m src.pipeline.build_trust_risk_analytics
+python -m src.dashboard.trust_risk_dashboard
+```
+
+Documentacion:
+
+```text
+docs/trust-risk-analytics.md
+```
+
+Dashboard generado:
+
+```text
+dashboards/trust_risk_dashboard.html
+```
+
 ## Gestión de tareas
 
 Este repo usa Beads para seguimiento de trabajo:
