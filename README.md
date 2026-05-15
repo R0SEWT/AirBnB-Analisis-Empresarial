@@ -45,6 +45,31 @@ La documentación estable está en:
 docs/architecture.md
 ```
 
+La implementación funcional del pipeline está documentada en:
+
+```text
+docs/data-medallion.md
+```
+
+Para generar los datasets `listings` y `reviews` desde `data/raw`:
+
+```bash
+python -m src.pipeline.run_medallion
+```
+
+Salidas principales:
+
+```text
+data/gold/listings.parquet
+data/gold/reviews.parquet
+```
+
+Interfaz visual generada:
+
+```text
+app/medallion_viewer.html
+```
+
 ## Gestión de tareas
 
 Este repo usa Beads para seguimiento de trabajo:

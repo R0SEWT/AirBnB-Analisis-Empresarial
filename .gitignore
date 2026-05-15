@@ -217,6 +217,9 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# Generated visual interface
+app/medallion_viewer.html
+
 # Data layers — keep folder structure via .gitkeep, ignore payloads
 data/raw/*
 data/bronze/*
