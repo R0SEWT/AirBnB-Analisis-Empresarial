@@ -2,11 +2,30 @@
 
 Esta rama agrega un modelo analitico explicable para producir informacion dashboard-ready sobre confianza y riesgo en listings de Airbnb.
 
-## Objetivo
+## Objetivo del dashboard
 
-Priorizar listings que requieren revision operativa, mejora de calidad, verificacion de host o monitoreo.
+Monitorear la calidad y el riesgo de listings antes y despues de su primera reserva, identificar mercados y tipos de propiedades con mayor probabilidad de disputas graves, y apoyar decisiones de Trust & Safety, soporte, compliance y mejora de experiencia.
 
-El modelo no es un modelo predictivo supervisado. Es un score interpretable basado en reglas de negocio y senales disponibles en `data/gold/listings.parquet` y `data/gold/reviews.parquet`.
+Con los recursos actuales, el dashboard usa la primera review observada como proxy operativo de actividad posterior a reserva. Para calcular precision, falsos positivos, tasa real de disputas graves, escalamiento humano y tiempo de resolucion se deben incorporar tablas de reservas, disputas y soporte.
+
+## Usuarios del dashboard
+
+- Lider de Ciencia de Datos: monitorea desempeno del modelo, precision, falsos positivos y deriva cuando existan etiquetas reales.
+- Equipo de Trust & Safety: prioriza revision manual, verificacion adicional y prevencion de fraude.
+- Equipo de Operaciones por mercado: identifica paises o ciudades con mayor concentracion de riesgo.
+- Equipo de Producto: evalua si cambios de flujo, soporte o pricing reducen fricciones.
+- Equipo Legal/Compliance: observa mercados donde restricciones locales pueden afectar operacion.
+
+## Indicadores clave
+
+| Indicador | Estado actual | Uso de negocio |
+|---|---|---|
+| Listings de alto riesgo | Calculado desde `risk_segment` High/Critical | Reducir exposicion a disputas antes de la primera reserva. |
+| Precision del modelo | Pendiente de etiquetas de disputa grave | Meta minima: 85%. |
+| Tasa de disputas graves | Pendiente de reservas y disputas | Meta: reduccion minima de 20% frente a linea base 2S-2025. |
+| Tiempo de resolucion | Pendiente de sistema de soporte | Evaluar eficacia de soporte IA + humano. |
+| Escalamiento humano | Pendiente de logs de IA/soporte | Controlar que la automatizacion no elimine juicio contextual. |
+| Falsos positivos | Pendiente de outcomes posteriores | Evitar impacto injusto sobre hosts. |
 
 ## Entradas
 
@@ -72,6 +91,18 @@ Dashboard generado:
 dashboards/trust_risk_dashboard.html
 ```
 
+## Visualizaciones implementadas
+
+| Visualizacion | Contenido | Decision que habilita |
+|---|---|---|
+| Mapa geografico | Estados Unidos, Brasil, Mexico, Espana y Japon segun archivos gold disponibles | Priorizar acciones locales. |
+| Tarjetas KPI | Listings evaluados, alto riesgo, porcentaje alto riesgo, risk score y trust score | Monitoreo ejecutivo. |
+| Tabla de KPIs operativos | Precision, disputas graves, resolucion, escalamiento y falsos positivos como metricas pendientes de fuente | Alinear brechas de datos. |
+| Embudo de riesgo | Listings evaluados -> alto riesgo -> revision manual -> hold preventivo | Medir eficiencia del flujo operativo. |
+| Matriz causa-impacto | Causas proxy: limpieza/fotos, seguridad/comunicacion, evidencia insuficiente, contenido, precio/cancelacion | Atacar causas raiz. |
+| Serie temporal proxy | High-risk listings por mes de ultima review observada | Medir evolucion hasta incorporar disputas reales. |
+| Ranking de segmentos | Mercado, tipo de habitacion y etapa del listing | Definir politicas diferenciadas. |
+
 ## Uso en Power BI, Tableau o Looker
 
 Importar las tablas de `data/gold/analytics/` como marts de consumo:
@@ -88,4 +119,3 @@ Metricas sugeridas:
 - tasa de alto riesgo
 - distribucion por `primary_risk_driver`
 - acciones recomendadas por prioridad
-

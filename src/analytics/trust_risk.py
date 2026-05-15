@@ -10,6 +10,16 @@ import pyarrow.parquet as pq
 
 from src.transformations.common import ensure_parent
 
+MARKET_METADATA = {
+    "listings": {"country": "United States", "market_label": "Asheville"},
+    "listings (1)": {"country": "United States", "market_label": "New Orleans"},
+    "listings (2)": {"country": "Brazil", "market_label": "Rio de Janeiro"},
+    "listings (3)": {"country": "Mexico", "market_label": "Mexico City"},
+    "listings (4)": {"country": "Spain", "market_label": "Barcelona"},
+    "listings (5)": {"country": "Spain", "market_label": "Girona / Costa Brava"},
+    "listings (6)": {"country": "Japan", "market_label": "Tokyo"},
+}
+
 
 @dataclass(frozen=True)
 class TrustRiskOutputs:
@@ -35,6 +45,10 @@ def normalize_bool(series: pd.Series) -> pd.Series:
 
 def market_name(listings: pd.DataFrame) -> pd.Series:
     return listings["_source_file"].astype("string").str.replace(".csv.gz", "", regex=False).fillna("unknown")
+
+
+def metadata_value(markets: pd.Series, key: str) -> pd.Series:
+    return markets.map(lambda market: MARKET_METADATA.get(str(market), {}).get(key, str(market)))
 
 
 def clip_score(series: pd.Series, maximum: float) -> pd.Series:
@@ -133,9 +147,22 @@ def recommended_action(frame: pd.DataFrame) -> pd.Series:
     return frame["primary_risk_driver"].map(mapping).fillna("Monitor listing")
 
 
+def dispute_cause_proxy(frame: pd.DataFrame) -> pd.Series:
+    mapping = {
+        "Listing quality": "Cleaning / inaccurate photos",
+        "Host trust": "Safety / communication",
+        "Review confidence": "Insufficient guest evidence",
+        "Listing completeness": "Inaccurate listing content",
+        "Price and market anomaly": "Price / cancellation friction",
+    }
+    return frame["primary_risk_driver"].map(mapping).fillna("Other")
+
+
 def build_listing_scores(listings: pd.DataFrame, review_features: pd.DataFrame) -> pd.DataFrame:
     scored = listings.merge(review_features, on="listing_id", how="left")
     scored["market"] = market_name(scored)
+    scored["country"] = metadata_value(scored["market"], "country")
+    scored["market_label"] = metadata_value(scored["market"], "market_label")
     scored["host_is_superhost_bool"] = normalize_bool(scored["host_is_superhost"])
     scored["host_identity_verified_bool"] = normalize_bool(scored["host_identity_verified"])
     scored["observed_reviews"] = scored["observed_reviews"].fillna(0)
@@ -187,10 +214,15 @@ def build_listing_scores(listings: pd.DataFrame, review_features: pd.DataFrame) 
     scored["risk_segment"] = risk_segment(scored["risk_score"])
     scored["primary_risk_driver"] = primary_driver(scored)
     scored["recommended_action"] = recommended_action(scored)
+    scored["dispute_cause_proxy"] = dispute_cause_proxy(scored)
+    scored["listing_lifecycle_stage"] = "After first observed review"
+    scored.loc[scored["observed_reviews"] == 0, "listing_lifecycle_stage"] = "Before first observed review"
 
     output_columns = [
         "listing_id",
         "market",
+        "country",
+        "market_label",
         "name",
         "host_id",
         "host_name",
@@ -216,6 +248,8 @@ def build_listing_scores(listings: pd.DataFrame, review_features: pd.DataFrame) 
         "trust_score",
         "risk_segment",
         "primary_risk_driver",
+        "dispute_cause_proxy",
+        "listing_lifecycle_stage",
         "recommended_action",
     ]
     return scored[output_columns].sort_values(["risk_score", "observed_reviews"], ascending=[False, True])
@@ -223,7 +257,7 @@ def build_listing_scores(listings: pd.DataFrame, review_features: pd.DataFrame) 
 
 def build_market_summary(scores: pd.DataFrame) -> pd.DataFrame:
     return (
-        scores.groupby("market", dropna=False)
+        scores.groupby(["country", "market", "market_label"], dropna=False)
         .agg(
             listings=("listing_id", "count"),
             avg_risk_score=("risk_score", "mean"),

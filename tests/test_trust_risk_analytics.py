@@ -100,5 +100,4 @@ def test_trust_risk_analytics_builds_scores_and_dashboard(tmp_path: Path) -> Non
     }
     assert dashboard_path.exists()
     assert result["output"] == str(dashboard_path)
-    assert "Airbnb Trust & Risk Dashboard" in dashboard_path.read_text(encoding="utf-8")
-
+    assert "Airbnb Trust & Safety Risk Dashboard" in dashboard_path.read_text(encoding="utf-8")

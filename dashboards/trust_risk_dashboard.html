@@ -3,64 +3,51 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Airbnb Trust & Risk Dashboard</title>
+  <title>Airbnb Trust & Safety Risk Dashboard</title>
   <style>
     :root {
       --bg: #f6f7f3;
       --panel: #fff;
       --ink: #172026;
-      --muted: #5f6d75;
+      --muted: #607078;
       --line: #d8ded6;
       --risk: #d9485f;
       --trust: #2f6f9f;
       --warn: #b4891d;
+      --green: #3d7c59;
     }
     * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--ink);
-      font-family: Inter, Segoe UI, Arial, sans-serif;
-    }
-    header {
-      padding: 24px 30px 18px;
-      background: #fff;
-      border-bottom: 1px solid var(--line);
-    }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: Inter, Segoe UI, Arial, sans-serif; }
+    header { padding: 24px 30px 18px; background: #fff; border-bottom: 1px solid var(--line); display: grid; gap: 12px; }
     h1 { margin: 0 0 8px; font-size: 30px; letter-spacing: 0; }
-    header p { margin: 0; color: var(--muted); max-width: 980px; line-height: 1.45; }
+    p { line-height: 1.45; }
+    header p, .muted { color: var(--muted); margin: 0; }
     main { padding: 22px 30px 36px; display: grid; gap: 18px; }
     .kpis { display: grid; grid-template-columns: repeat(6, minmax(140px, 1fr)); gap: 12px; }
-    .card, .panel {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 16px;
-    }
-    .card span {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-    .card strong { display: block; margin-top: 8px; font-size: 28px; line-height: 1; }
     .grid { display: grid; grid-template-columns: repeat(2, minmax(280px, 1fr)); gap: 18px; }
+    .card, .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+    .card span { display: block; color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+    .card strong { display: block; margin-top: 8px; font-size: 28px; line-height: 1; }
     h2 { margin: 0 0 14px; font-size: 18px; letter-spacing: 0; }
-    .bar-row { display: grid; grid-template-columns: minmax(120px, 220px) 1fr 86px; gap: 10px; align-items: center; margin: 9px 0; }
+    h3 { margin: 0 0 8px; font-size: 15px; }
+    .users { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill { border: 1px solid var(--line); border-radius: 999px; padding: 7px 10px; background: #f8faf8; color: var(--ink); font-size: 13px; }
+    .bar-row { display: grid; grid-template-columns: minmax(130px, 230px) 1fr 92px; gap: 10px; align-items: center; margin: 9px 0; }
     .label { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
     .track { height: 12px; background: #edf0ed; border-radius: 999px; overflow: hidden; }
     .bar { height: 100%; background: var(--trust); border-radius: 999px; }
     .bar.risk { background: var(--risk); }
     .value { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .market-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+    .market { border: 1px solid var(--line); border-left: 6px solid var(--risk); border-radius: 8px; padding: 12px; background: #fff; }
+    .market strong { display: block; margin-bottom: 4px; }
+    .funnel { display: grid; gap: 8px; }
     table { width: 100%; border-collapse: collapse; }
     th, td { border-bottom: 1px solid var(--line); padding: 9px 7px; text-align: left; font-size: 14px; vertical-align: top; }
     th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+    .trend { width: 100%; height: 230px; }
     footer { color: var(--muted); padding: 0 30px 24px; font-size: 13px; }
-    @media (max-width: 1100px) {
-      .kpis { grid-template-columns: repeat(3, 1fr); }
-      .grid { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 1100px) { .kpis { grid-template-columns: repeat(3, 1fr); } .grid { grid-template-columns: 1fr; } }
     @media (max-width: 700px) {
       header, main, footer { padding-left: 16px; padding-right: 16px; }
       .kpis { grid-template-columns: 1fr; }
@@ -71,16 +58,28 @@
 </head>
 <body>
   <header>
-    <h1>Airbnb Trust & Risk Dashboard</h1>
-    <p>Vista dashboard-ready basada en un score explicable de confianza y riesgo. El objetivo es priorizar intervenciones operativas; no representa un modelo predictivo validado.</p>
+    <div>
+      <h1>Airbnb Trust & Safety Risk Dashboard</h1>
+      <p id="objective"></p>
+    </div>
+    <div class="users" id="users"></div>
   </header>
   <main>
     <section class="kpis" id="kpis"></section>
+    <section class="panel">
+      <h2>KPIs del modelo y operacion</h2>
+      <table id="modelKpis"></table>
+    </section>
     <section class="grid">
-      <div class="panel"><h2>Distribucion por segmento</h2><div id="segments"></div></div>
-      <div class="panel"><h2>Principales drivers de riesgo</h2><div id="drivers"></div></div>
-      <div class="panel"><h2>Mercados con mayor riesgo promedio</h2><div id="markets"></div></div>
-      <div class="panel"><h2>Acciones recomendadas</h2><p id="actions"></p></div>
+      <div class="panel"><h2>Mapa geografico de riesgo</h2><div class="market-grid" id="markets"></div></div>
+      <div class="panel"><h2>Embudo de riesgo</h2><div class="funnel" id="funnel"></div></div>
+      <div class="panel"><h2>Matriz causa-impacto</h2><div id="driverMatrix"></div></div>
+      <div class="panel"><h2>Ranking de segmentos</h2><div id="segmentRanking"></div></div>
+    </section>
+    <section class="panel">
+      <h2>Serie temporal proxy</h2>
+      <p class="muted">Usa ultima review observada por listing como proxy hasta incorporar reservas y disputas graves reales.</p>
+      <svg class="trend" id="trend"></svg>
     </section>
     <section class="panel">
       <h2>Listings priorizados por riesgo</h2>
@@ -88,28 +87,28 @@
     </section>
   </main>
   <footer id="footer"></footer>
-  <script id="dashboard-data" type="application/json">{"generated_at_utc": "2026-05-15T12:30:35.809957+00:00", "sources": {"analytics_dir": "data\\gold\\analytics"}, "kpis": {"listings": 136615, "avg_risk_score": 18.11, "avg_trust_score": 81.89, "high_risk_listings": 12441, "high_risk_rate": 9.11, "critical_risk_listings": 0}, "segments": [{"risk_segment": "Low", "listings": 99573, "avg_risk_score": 8.49, "avg_trust_score": 91.51}, {"risk_segment": "Moderate", "listings": 24601, "avg_risk_score": 38.68, "avg_trust_score": 61.32}, {"risk_segment": "High", "listings": 12441, "avg_risk_score": 54.4, "avg_trust_score": 45.6}], "markets": [{"market": "listings (4)", "listings": 18177, "avg_risk_score": 26.48, "avg_trust_score": 73.52, "high_risk_rate": 18.56, "critical_risk_rate": 0.0}, {"market": "listings (5)", "listings": 17069, "avg_risk_score": 20.99, "avg_trust_score": 79.01, "high_risk_rate": 9.89, "critical_risk_rate": 0.0}, {"market": "listings (2)", "listings": 43068, "avg_risk_score": 19.96, "avg_trust_score": 80.04, "high_risk_rate": 12.4, "critical_risk_rate": 0.0}, {"market": "listings (1)", "listings": 453, "avg_risk_score": 16.13, "avg_trust_score": 83.87, "high_risk_rate": 7.51, "critical_risk_rate": 0.0}, {"market": "listings (3)", "listings": 27051, "avg_risk_score": 13.98, "avg_trust_score": 86.02, "high_risk_rate": 5.73, "critical_risk_rate": 0.0}, {"market": "listings (6)", "listings": 27945, "avg_risk_score": 12.92, "avg_trust_score": 87.08, "high_risk_rate": 1.32, "critical_risk_rate": 0.0}, {"market": "listings", "listings": 2852, "avg_risk_score": 9.76, "avg_trust_score": 90.24, "high_risk_rate": 2.98, "critical_risk_rate": 0.0}], "drivers": [{"driver": "Review confidence", "listings": 44727, "avg_risk_score": 34.45}, {"driver": "Host trust", "listings": 38013, "avg_risk_score": 10.7}, {"driver": "Listing quality", "listings": 37871, "avg_risk_score": 9.85}, {"driver": "Listing completeness", "listings": 13909, "avg_risk_score": 8.92}, {"driver": "Price and market anomaly", "listings": 2095, "avg_risk_score": 13.89}], "top_risk_listings": [{"listing_id": 1167660656581120384, "name": "Apt completo Rock in Rio 200m", "market": "listings (2)", "risk_score": 74.0, "trust_score": 26.0, "risk_segment": "High", "driver": "Host trust", "action": "Request host verification or host support intervention"}, {"listing_id": 907136, "name": "Santana Temporada - Bolivar 501", "market": "listings (2)", "risk_score": 72.0, "trust_score": 28.0, "risk_segment": "High", "driver": "Host trust", "action": "Request host verification or host support intervention"}, {"listing_id": 2092441, "name": "Santana Temporada-Nossa Senhora1203", "market": "listings (2)", "risk_score": 72.0, "trust_score": 28.0, "risk_segment": "High", "driver": "Host trust", "action": "Request host verification or host support intervention"}, {"listing_id": 1269006658174972093, "name": "Quarto Hotel Nacional.", "market": "listings (2)", "risk_score": 72.0, "trust_score": 28.0, "risk_segment": "High", "driver": "Host trust", "action": "Request host verification or host support intervention"}, {"listing_id": 2967910, "name": "Aluga quarto para casal - Tijuca", "market": "listings (2)", "risk_score": 71.0, "trust_score": 29.0, "risk_segment": "High", "driver": "Review confidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}, {"listing_id": 14786962, "name": "Frontal mar barra da Tijuca condom\u00ednio sofisticado", "market": "listings (2)", "risk_score": 71.0, "trust_score": 29.0, "risk_segment": "High", "driver": "Review confidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}, {"listing_id": 1310203771648097175, "name": "R\u00e9veillon 2025 Copacabana Praia", "market": "listings (2)", "risk_score": 71.0, "trust_score": 29.0, "risk_segment": "High", "driver": "Review confidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}, {"listing_id": 2865175, "name": "BEAUTIFUL APARTMENT ON LEBLON BEACH", "market": "listings (2)", "risk_score": 70.0, "trust_score": 30.0, "risk_segment": "High", "driver": "Host trust", "action": "Request host verification or host support intervention"}, {"listing_id": 3157234, "name": "Para\u00edso Tropical", "market": "listings (2)", "risk_score": 70.0, "trust_score": 30.0, "risk_segment": "High", "driver": "Host trust", "action": "Request host verification or host support intervention"}, {"listing_id": 53552613, "name": "Casa maravilhosa em condom\u00ednio de luxo no Recreio.", "market": "listings (2)", "risk_score": 70.0, "trust_score": 30.0, "risk_segment": "High", "driver": "Host trust", "action": "Request host verification or host support intervention"}, {"listing_id": 775576266144398889, "name": "Apartamento Alto nivel 100mts de playa Ipanema", "market": "listings (2)", "risk_score": 70.0, "trust_score": 30.0, "risk_segment": "High", "driver": "Host trust", "action": "Request host verification or host support intervention"}, {"listing_id": 776262495135424495, "name": "Ap Atlantica VistaMar Copacabana", "market": "listings (2)", "risk_score": 70.0, "trust_score": 30.0, "risk_segment": "High", "driver": "Host trust", "action": "Request host verification or host support intervention"}, {"listing_id": 1283882165714039869, "name": "Casa Alto da Boa vista (eventos)", "market": "listings (2)", "risk_score": 70.0, "trust_score": 30.0, "risk_segment": "High", "driver": "Host trust", "action": "Request host verification or host support intervention"}, {"listing_id": 1359255744606917967, "name": "Duplex na praia de Copacabana - Posto 5", "market": "listings (2)", "risk_score": 70.0, "trust_score": 30.0, "risk_segment": "High", "driver": "Host trust", "action": "Request host verification or host support intervention"}, {"listing_id": 34391066, "name": "Flat vista Mar!", "market": "listings (2)", "risk_score": 69.16, "trust_score": 30.84, "risk_segment": "High", "driver": "Review confidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}, {"listing_id": 1245577153768519442, "name": "Flat Av Pepe barra, frente Mar!", "market": "listings (2)", "risk_score": 69.16, "trust_score": 30.84, "risk_segment": "High", "driver": "Review confidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}, {"listing_id": 1303781659749983621, "name": "Vista Mar, Estilo Risort na Barra da Tijuca RJ", "market": "listings (2)", "risk_score": 69.16, "trust_score": 30.84, "risk_segment": "High", "driver": "Review confidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}, {"listing_id": 1494558426097104186, "name": "Casa na beira da praia Barra da Tijuca!", "market": "listings (2)", "risk_score": 69.16, "trust_score": 30.84, "risk_segment": "High", "driver": "Review confidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}, {"listing_id": 1494575729986524505, "name": "Mans\u00e3o 4 quartos, beira da praia, Barra da Tijuca!", "market": "listings (2)", "risk_score": 69.16, "trust_score": 30.84, "risk_segment": "High", "driver": "Review confidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}, {"listing_id": 1505861545922678158, "name": "Mans\u00e3o para Festas & Hospedagens grupos grandes", "market": "listings (2)", "risk_score": 69.16, "trust_score": 30.84, "risk_segment": "High", "driver": "Review confidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}]}</script>
+  <script id="dashboard-data" type="application/json">{"generated_at_utc": "2026-05-15T12:40:01.706340+00:00", "sources": {"analytics_dir": "data\\gold\\analytics"}, "objective": "Monitorear la calidad y el riesgo de listings antes y despues de su primera reserva, identificar mercados y tipos de propiedades con mayor probabilidad de disputas graves, y apoyar decisiones de Trust & Safety, soporte, compliance y experiencia.", "users": ["Lider de Ciencia de Datos", "Equipo de Trust & Safety", "Operaciones por mercado", "Equipo de Producto", "Legal / Compliance"], "kpis": {"listings": 136615, "high_risk_listings": 12441, "high_risk_rate": 9.11, "critical_risk_listings": 0, "avg_risk_score": 18.11, "avg_trust_score": 81.89}, "model_kpis": [{"indicator": "Precision del modelo", "value": "Pendiente", "target": ">= 85%", "source": "Requiere etiquetas de disputa grave"}, {"indicator": "Tasa de disputas graves", "value": "Pendiente", "target": "-20% vs linea base 2S-2025", "source": "Requiere reservas y disputas"}, {"indicator": "Tiempo de resolucion", "value": "Pendiente", "target": "Reducir horas/dias promedio", "source": "Requiere sistema de soporte"}, {"indicator": "Escalamiento humano", "value": "Pendiente", "target": "Control operativo", "source": "Requiere logs IA + soporte"}, {"indicator": "Falsos positivos", "value": "Pendiente", "target": "Minimizar impacto injusto", "source": "Requiere outcomes posteriores"}], "funnel": [{"stage": "Listings nuevos / activos", "listings": 136615}, {"stage": "Listings evaluados", "listings": 136615}, {"stage": "Alto riesgo", "listings": 12441}, {"stage": "Revision manual sugerida", "listings": 12441}, {"stage": "Bloqueo o hold preventivo", "listings": 0}], "markets": [{"country": "Spain", "market": "Barcelona", "source": "listings (4)", "listings": 18177, "high_risk_rate": 18.56, "critical_risk_rate": 0.0, "avg_risk_score": 26.48}, {"country": "Brazil", "market": "Rio de Janeiro", "source": "listings (2)", "listings": 43068, "high_risk_rate": 12.4, "critical_risk_rate": 0.0, "avg_risk_score": 19.96}, {"country": "Spain", "market": "Girona / Costa Brava", "source": "listings (5)", "listings": 17069, "high_risk_rate": 9.89, "critical_risk_rate": 0.0, "avg_risk_score": 20.99}, {"country": "United States", "market": "New Orleans", "source": "listings (1)", "listings": 453, "high_risk_rate": 7.51, "critical_risk_rate": 0.0, "avg_risk_score": 16.13}, {"country": "Mexico", "market": "Mexico City", "source": "listings (3)", "listings": 27051, "high_risk_rate": 5.73, "critical_risk_rate": 0.0, "avg_risk_score": 13.98}, {"country": "United States", "market": "Asheville", "source": "listings", "listings": 2852, "high_risk_rate": 2.98, "critical_risk_rate": 0.0, "avg_risk_score": 9.76}, {"country": "Japan", "market": "Tokyo", "source": "listings (6)", "listings": 27945, "high_risk_rate": 1.32, "critical_risk_rate": 0.0, "avg_risk_score": 12.92}], "segments": [{"risk_segment": "Low", "listings": 99573, "avg_risk_score": 8.4880945638, "avg_trust_score": 91.5119054362, "avg_rating": 4.8086362769, "avg_observed_reviews": 53.2771132737}, {"risk_segment": "Moderate", "listings": 24601, "avg_risk_score": 38.6787618389, "avg_trust_score": 61.3212381611, "avg_rating": 4.1956745516, "avg_observed_reviews": 2.2549083371}, {"risk_segment": "High", "listings": 12441, "avg_risk_score": 54.4041507917, "avg_trust_score": 45.5958492083, "avg_rating": 2.5881176471, "avg_observed_reviews": 0.066232618}], "driver_matrix": [{"cause": "Insufficient guest evidence", "driver": "Review confidence", "listings": 44727, "high_risk_listings": 11604, "high_risk_rate": 25.94, "avg_risk_score": 34.45}, {"cause": "Cleaning / inaccurate photos", "driver": "Listing quality", "listings": 37871, "high_risk_listings": 483, "high_risk_rate": 1.28, "avg_risk_score": 9.85}, {"cause": "Safety / communication", "driver": "Host trust", "listings": 38013, "high_risk_listings": 353, "high_risk_rate": 0.93, "avg_risk_score": 10.7}, {"cause": "Price / cancellation friction", "driver": "Price and market anomaly", "listings": 2095, "high_risk_listings": 1, "high_risk_rate": 0.05, "avg_risk_score": 13.89}, {"cause": "Inaccurate listing content", "driver": "Listing completeness", "listings": 13909, "high_risk_listings": 0, "high_risk_rate": 0.0, "avg_risk_score": 8.92}], "temporal_proxy": [{"year_month": "2023-03", "reviewed_listings": 180, "high_risk_listings": 5, "avg_risk_score": 23.04}, {"year_month": "2023-04", "reviewed_listings": 195, "high_risk_listings": 6, "avg_risk_score": 22.8}, {"year_month": "2023-05", "reviewed_listings": 202, "high_risk_listings": 4, "avg_risk_score": 22.34}, {"year_month": "2023-06", "reviewed_listings": 190, "high_risk_listings": 7, "avg_risk_score": 23.34}, {"year_month": "2023-07", "reviewed_listings": 273, "high_risk_listings": 7, "avg_risk_score": 24.31}, {"year_month": "2023-08", "reviewed_listings": 490, "high_risk_listings": 17, "avg_risk_score": 25.61}, {"year_month": "2023-09", "reviewed_listings": 286, "high_risk_listings": 12, "avg_risk_score": 24.65}, {"year_month": "2023-10", "reviewed_listings": 303, "high_risk_listings": 8, "avg_risk_score": 22.6}, {"year_month": "2023-11", "reviewed_listings": 523, "high_risk_listings": 14, "avg_risk_score": 22.69}, {"year_month": "2023-12", "reviewed_listings": 235, "high_risk_listings": 3, "avg_risk_score": 20.03}, {"year_month": "2024-01", "reviewed_listings": 456, "high_risk_listings": 8, "avg_risk_score": 21.92}, {"year_month": "2024-02", "reviewed_listings": 721, "high_risk_listings": 9, "avg_risk_score": 22.25}, {"year_month": "2024-03", "reviewed_listings": 365, "high_risk_listings": 3, "avg_risk_score": 20.14}, {"year_month": "2024-04", "reviewed_listings": 351, "high_risk_listings": 3, "avg_risk_score": 20.06}, {"year_month": "2024-05", "reviewed_listings": 433, "high_risk_listings": 6, "avg_risk_score": 21.51}, {"year_month": "2024-06", "reviewed_listings": 458, "high_risk_listings": 10, "avg_risk_score": 22.36}, {"year_month": "2024-07", "reviewed_listings": 592, "high_risk_listings": 12, "avg_risk_score": 22.32}, {"year_month": "2024-08", "reviewed_listings": 1011, "high_risk_listings": 23, "avg_risk_score": 24.01}, {"year_month": "2024-09", "reviewed_listings": 1217, "high_risk_listings": 29, "avg_risk_score": 21.38}, {"year_month": "2024-10", "reviewed_listings": 732, "high_risk_listings": 21, "avg_risk_score": 21.41}, {"year_month": "2024-11", "reviewed_listings": 1026, "high_risk_listings": 21, "avg_risk_score": 20.03}, {"year_month": "2024-12", "reviewed_listings": 830, "high_risk_listings": 15, "avg_risk_score": 19.05}, {"year_month": "2025-01", "reviewed_listings": 1758, "high_risk_listings": 24, "avg_risk_score": 20.03}, {"year_month": "2025-02", "reviewed_listings": 1228, "high_risk_listings": 10, "avg_risk_score": 15.02}, {"year_month": "2025-03", "reviewed_listings": 3717, "high_risk_listings": 22, "avg_risk_score": 14.77}, {"year_month": "2025-04", "reviewed_listings": 3109, "high_risk_listings": 8, "avg_risk_score": 12.32}, {"year_month": "2025-05", "reviewed_listings": 5327, "high_risk_listings": 19, "avg_risk_score": 12.2}, {"year_month": "2025-06", "reviewed_listings": 5332, "high_risk_listings": 8, "avg_risk_score": 10.76}, {"year_month": "2025-07", "reviewed_listings": 6400, "high_risk_listings": 11, "avg_risk_score": 9.73}, {"year_month": "2025-08", "reviewed_listings": 16249, "high_risk_listings": 13, "avg_risk_score": 9.13}, {"year_month": "2025-09", "reviewed_listings": 39259, "high_risk_listings": 8, "avg_risk_score": 6.05}, {"year_month": "2025-10", "reviewed_listings": 2923, "high_risk_listings": 6, "avg_risk_score": 11.96}, {"year_month": "2025-11", "reviewed_listings": 5349, "high_risk_listings": 11, "avg_risk_score": 11.61}, {"year_month": "2025-12", "reviewed_listings": 3671, "high_risk_listings": 0, "avg_risk_score": 9.44}, {"year_month": "2026-01", "reviewed_listings": 99, "high_risk_listings": 0, "avg_risk_score": 7.57}, {"year_month": "2026-02", "reviewed_listings": 72, "high_risk_listings": 0, "avg_risk_score": 7.75}], "segment_ranking": [{"segment": "Spain | Barcelona | Private room | Before first observed review", "listings": 2591, "avg_risk_score": 52.4, "high_risk_rate": 67.97, "avg_price": 0.0}, {"segment": "United States | New Orleans | Entire home/apt | Before first observed review", "listings": 44, "avg_risk_score": 48.8, "high_risk_rate": 65.91, "avg_price": 0.0}, {"segment": "Brazil | Rio de Janeiro | Shared room | Before first observed review", "listings": 110, "avg_risk_score": 51.69, "high_risk_rate": 63.64, "avg_price": 426.42}, {"segment": "Spain | Barcelona | Entire home/apt | Before first observed review", "listings": 2456, "avg_risk_score": 50.73, "high_risk_rate": 58.88, "avg_price": 0.0}, {"segment": "Brazil | Rio de Janeiro | Private room | Before first observed review", "listings": 2437, "avg_risk_score": 51.02, "high_risk_rate": 58.15, "avg_price": 611.59}, {"segment": "Brazil | Rio de Janeiro | Entire home/apt | Before first observed review", "listings": 6638, "avg_risk_score": 50.29, "high_risk_rate": 55.09, "avg_price": 1715.71}, {"segment": "Spain | Girona / Costa Brava | Entire home/apt | Before first observed review", "listings": 2831, "avg_risk_score": 49.45, "high_risk_rate": 54.4, "avg_price": 0.0}, {"segment": "Mexico | Mexico City | Private room | Before first observed review", "listings": 1744, "avg_risk_score": 50.33, "high_risk_rate": 49.66, "avg_price": 2789.43}, {"segment": "United States | Asheville | Entire home/apt | Before first observed review", "listings": 204, "avg_risk_score": 47.04, "high_risk_rate": 37.75, "avg_price": 329.64}, {"segment": "Mexico | Mexico City | Entire home/apt | Before first observed review", "listings": 1577, "avg_risk_score": 48.02, "high_risk_rate": 37.22, "avg_price": 4410.63}, {"segment": "Spain | Girona / Costa Brava | Private room | Before first observed review", "listings": 251, "avg_risk_score": 47.43, "high_risk_rate": 30.68, "avg_price": 0.0}, {"segment": "United States | Asheville | Private room | Before first observed review", "listings": 31, "avg_risk_score": 45.87, "high_risk_rate": 25.81, "avg_price": 144.47}, {"segment": "Mexico | Mexico City | Shared room | Before first observed review", "listings": 48, "avg_risk_score": 47.03, "high_risk_rate": 20.83, "avg_price": 322.02}, {"segment": "Japan | Tokyo | Private room | Before first observed review", "listings": 526, "avg_risk_score": 45.31, "high_risk_rate": 19.2, "avg_price": 38585.58}, {"segment": "Mexico | Mexico City | Hotel room | Before first observed review", "listings": 32, "avg_risk_score": 44.59, "high_risk_rate": 9.38, "avg_price": 91631.0}], "top_risk_listings": [{"listing_id": 1167660656581120384, "name": "Apt completo Rock in Rio 200m", "market": "Brazil / Rio de Janeiro", "risk_score": 74.0, "trust_score": 26.0, "risk_segment": "High", "cause": "Safety / communication", "action": "Request host verification or host support intervention"}, {"listing_id": 907136, "name": "Santana Temporada - Bolivar 501", "market": "Brazil / Rio de Janeiro", "risk_score": 72.0, "trust_score": 28.0, "risk_segment": "High", "cause": "Safety / communication", "action": "Request host verification or host support intervention"}, {"listing_id": 2092441, "name": "Santana Temporada-Nossa Senhora1203", "market": "Brazil / Rio de Janeiro", "risk_score": 72.0, "trust_score": 28.0, "risk_segment": "High", "cause": "Safety / communication", "action": "Request host verification or host support intervention"}, {"listing_id": 1269006658174972093, "name": "Quarto Hotel Nacional.", "market": "Brazil / Rio de Janeiro", "risk_score": 72.0, "trust_score": 28.0, "risk_segment": "High", "cause": "Safety / communication", "action": "Request host verification or host support intervention"}, {"listing_id": 2967910, "name": "Aluga quarto para casal - Tijuca", "market": "Brazil / Rio de Janeiro", "risk_score": 71.0, "trust_score": 29.0, "risk_segment": "High", "cause": "Insufficient guest evidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}, {"listing_id": 14786962, "name": "Frontal mar barra da Tijuca condom\u00ednio sofisticado", "market": "Brazil / Rio de Janeiro", "risk_score": 71.0, "trust_score": 29.0, "risk_segment": "High", "cause": "Insufficient guest evidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}, {"listing_id": 1310203771648097175, "name": "R\u00e9veillon 2025 Copacabana Praia", "market": "Brazil / Rio de Janeiro", "risk_score": 71.0, "trust_score": 29.0, "risk_segment": "High", "cause": "Insufficient guest evidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}, {"listing_id": 2865175, "name": "BEAUTIFUL APARTMENT ON LEBLON BEACH", "market": "Brazil / Rio de Janeiro", "risk_score": 70.0, "trust_score": 30.0, "risk_segment": "High", "cause": "Safety / communication", "action": "Request host verification or host support intervention"}, {"listing_id": 3157234, "name": "Para\u00edso Tropical", "market": "Brazil / Rio de Janeiro", "risk_score": 70.0, "trust_score": 30.0, "risk_segment": "High", "cause": "Safety / communication", "action": "Request host verification or host support intervention"}, {"listing_id": 53552613, "name": "Casa maravilhosa em condom\u00ednio de luxo no Recreio.", "market": "Brazil / Rio de Janeiro", "risk_score": 70.0, "trust_score": 30.0, "risk_segment": "High", "cause": "Safety / communication", "action": "Request host verification or host support intervention"}, {"listing_id": 775576266144398889, "name": "Apartamento Alto nivel 100mts de playa Ipanema", "market": "Brazil / Rio de Janeiro", "risk_score": 70.0, "trust_score": 30.0, "risk_segment": "High", "cause": "Safety / communication", "action": "Request host verification or host support intervention"}, {"listing_id": 776262495135424495, "name": "Ap Atlantica VistaMar Copacabana", "market": "Brazil / Rio de Janeiro", "risk_score": 70.0, "trust_score": 30.0, "risk_segment": "High", "cause": "Safety / communication", "action": "Request host verification or host support intervention"}, {"listing_id": 1283882165714039869, "name": "Casa Alto da Boa vista (eventos)", "market": "Brazil / Rio de Janeiro", "risk_score": 70.0, "trust_score": 30.0, "risk_segment": "High", "cause": "Safety / communication", "action": "Request host verification or host support intervention"}, {"listing_id": 1359255744606917967, "name": "Duplex na praia de Copacabana - Posto 5", "market": "Brazil / Rio de Janeiro", "risk_score": 70.0, "trust_score": 30.0, "risk_segment": "High", "cause": "Safety / communication", "action": "Request host verification or host support intervention"}, {"listing_id": 34391066, "name": "Flat vista Mar!", "market": "Brazil / Rio de Janeiro", "risk_score": 69.16, "trust_score": 30.84, "risk_segment": "High", "cause": "Insufficient guest evidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}, {"listing_id": 1245577153768519442, "name": "Flat Av Pepe barra, frente Mar!", "market": "Brazil / Rio de Janeiro", "risk_score": 69.16, "trust_score": 30.84, "risk_segment": "High", "cause": "Insufficient guest evidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}, {"listing_id": 1303781659749983621, "name": "Vista Mar, Estilo Risort na Barra da Tijuca RJ", "market": "Brazil / Rio de Janeiro", "risk_score": 69.16, "trust_score": 30.84, "risk_segment": "High", "cause": "Insufficient guest evidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}, {"listing_id": 1494558426097104186, "name": "Casa na beira da praia Barra da Tijuca!", "market": "Brazil / Rio de Janeiro", "risk_score": 69.16, "trust_score": 30.84, "risk_segment": "High", "cause": "Insufficient guest evidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}, {"listing_id": 1494575729986524505, "name": "Mans\u00e3o 4 quartos, beira da praia, Barra da Tijuca!", "market": "Brazil / Rio de Janeiro", "risk_score": 69.16, "trust_score": 30.84, "risk_segment": "High", "cause": "Insufficient guest evidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}, {"listing_id": 1505861545922678158, "name": "Mans\u00e3o para Festas & Hospedagens grupos grandes", "market": "Brazil / Rio de Janeiro", "risk_score": 69.16, "trust_score": 30.84, "risk_segment": "High", "cause": "Insufficient guest evidence", "action": "Monitor low-confidence listing until more recent guest signals appear"}]}</script>
   <script>
     const payload = JSON.parse(document.getElementById('dashboard-data').textContent);
     const fmt = new Intl.NumberFormat('en-US');
-    const pct = value => `${Number(value || 0).toFixed(2)}%`;
     const num = value => fmt.format(Math.round(value || 0));
     const dec = value => Number(value || 0).toFixed(2);
+    const pct = value => `${Number(value || 0).toFixed(2)}%`;
 
     function renderKpis() {
       const k = payload.kpis;
       const rows = [
-        ['Listings', num(k.listings)],
+        ['Listings evaluados', num(k.listings)],
+        ['Alto riesgo', num(k.high_risk_listings)],
+        ['% alto riesgo', pct(k.high_risk_rate)],
+        ['Critical', num(k.critical_risk_listings)],
         ['Risk score prom.', dec(k.avg_risk_score)],
         ['Trust score prom.', dec(k.avg_trust_score)],
-        ['High + Critical', num(k.high_risk_listings)],
-        ['Tasa alto riesgo', pct(k.high_risk_rate)],
-        ['Critical', num(k.critical_risk_listings)],
       ];
       document.getElementById('kpis').innerHTML = rows.map(([label, value]) => `<div class="card"><span>${label}</span><strong>${value}</strong></div>`).join('');
     }
 
-    function bars(id, rows, labelKey, valueKey, cls = '') {
+    function bars(id, rows, labelKey, valueKey, cls = 'risk') {
       const max = Math.max(...rows.map(row => row[valueKey] || 0), 1);
       document.getElementById(id).innerHTML = rows.map(row => {
         const value = row[valueKey] || 0;
@@ -118,25 +117,55 @@
       }).join('');
     }
 
-    function renderTable() {
-      const header = '<thead><tr><th>Listing</th><th>Mercado</th><th>Riesgo</th><th>Confianza</th><th>Driver</th><th>Accion</th></tr></thead>';
-      const body = payload.top_risk_listings.map(row => `<tr><td>${row.name}<br><span>#${row.listing_id}</span></td><td>${row.market}</td><td>${dec(row.risk_score)}<br>${row.risk_segment}</td><td>${dec(row.trust_score)}</td><td>${row.driver}</td><td>${row.action}</td></tr>`).join('');
+    function renderModelKpis() {
+      const header = '<thead><tr><th>Indicador</th><th>Valor actual</th><th>Meta</th><th>Fuente requerida</th></tr></thead>';
+      const body = payload.model_kpis.map(row => `<tr><td>${row.indicator}</td><td>${row.value}</td><td>${row.target}</td><td>${row.source}</td></tr>`).join('');
+      document.getElementById('modelKpis').innerHTML = `${header}<tbody>${body}</tbody>`;
+    }
+
+    function renderMarkets() {
+      document.getElementById('markets').innerHTML = payload.markets.map(row => `<div class="market"><strong>${row.country}</strong><span>${row.market}</span><p class="muted">${num(row.listings)} listings | ${pct(row.high_risk_rate)} alto riesgo | score ${dec(row.avg_risk_score)}</p></div>`).join('');
+    }
+
+    function renderTrend() {
+      const rows = payload.temporal_proxy;
+      const svg = document.getElementById('trend');
+      const width = svg.clientWidth || 900;
+      const height = 230;
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      if (!rows.length) {
+        svg.innerHTML = '<text x="16" y="36" fill="#607078">Sin datos temporales disponibles.</text>';
+        return;
+      }
+      const max = Math.max(...rows.map(row => row.high_risk_listings), 1);
+      const points = rows.map((row, index) => {
+        const x = 34 + (index / Math.max(rows.length - 1, 1)) * (width - 68);
+        const y = height - 30 - (row.high_risk_listings / max) * (height - 64);
+        return [x, y, row];
+      });
+      const line = points.map(point => `${point[0]},${point[1]}`).join(' ');
+      const dots = points.map(([x, y, row]) => `<circle cx="${x}" cy="${y}" r="3" fill="#d9485f"><title>${row.year_month}: ${num(row.high_risk_listings)} high risk</title></circle>`).join('');
+      svg.innerHTML = `<polyline fill="none" stroke="#d9485f" stroke-width="3" points="${line}"></polyline>${dots}<text x="34" y="20" fill="#607078">High-risk listings por mes observado</text>`;
+    }
+
+    function renderTopRisk() {
+      const header = '<thead><tr><th>Listing</th><th>Mercado</th><th>Riesgo</th><th>Confianza</th><th>Causa proxy</th><th>Accion</th></tr></thead>';
+      const body = payload.top_risk_listings.map(row => `<tr><td>${row.name}<br><span class="muted">#${row.listing_id}</span></td><td>${row.market}</td><td>${dec(row.risk_score)}<br>${row.risk_segment}</td><td>${dec(row.trust_score)}</td><td>${row.cause}</td><td>${row.action}</td></tr>`).join('');
       document.getElementById('topRisk').innerHTML = `${header}<tbody>${body}</tbody>`;
     }
 
-    function renderActions() {
-      const actions = payload.top_risk_listings.slice(0, 5).map(row => row.action);
-      const unique = [...new Set(actions)];
-      document.getElementById('actions').textContent = unique.join(' | ');
-    }
-
+    document.getElementById('objective').textContent = payload.objective;
+    document.getElementById('users').innerHTML = payload.users.map(user => `<span class="pill">${user}</span>`).join('');
     renderKpis();
-    bars('segments', payload.segments, 'risk_segment', 'listings', 'risk');
-    bars('drivers', payload.drivers, 'driver', 'listings', 'risk');
-    bars('markets', payload.markets, 'market', 'avg_risk_score', 'risk');
-    renderActions();
-    renderTable();
+    renderModelKpis();
+    renderMarkets();
+    bars('funnel', payload.funnel, 'stage', 'listings');
+    bars('driverMatrix', payload.driver_matrix, 'cause', 'high_risk_listings');
+    bars('segmentRanking', payload.segment_ranking, 'segment', 'high_risk_rate');
+    renderTrend();
+    renderTopRisk();
     document.getElementById('footer').textContent = `Generado: ${payload.generated_at_utc} | Fuente: ${payload.sources.analytics_dir}`;
+    window.addEventListener('resize', renderTrend);
   </script>
 </body>
 </html>
