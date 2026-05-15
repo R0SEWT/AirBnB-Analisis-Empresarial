@@ -1,0 +1,18 @@
+{
+  "raw_file_patterns": {
+    "listings": "data/raw/listings*.csv.gz",
+    "reviews": "data/raw/reviews*.csv.gz"
+  },
+  "gold_datasets": {
+    "listings": "data/gold/listings.parquet",
+    "reviews": "data/gold/reviews.parquet"
+  },
+  "csv_export": "data/gold/listings.csv",
+  "join_key": "listing_id",
+  "layer_contract": {
+    "raw": "Original csv.gz files copied without manual edits.",
+    "bronze": "Parquet tables with raw columns aligned across files and source metadata.",
+    "silver": "Typed listings and reviews entities with deduplication and normalized fields.",
+    "gold": "Two business-ready datasets: one row per listing and one row per review, without joining both domains."
+  }
+}
