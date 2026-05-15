@@ -86,10 +86,17 @@ Luego generar el dashboard:
 python -m src.dashboard.airbnb_dashboard
 ```
 
+Generar la vista visual del modelo estrella:
+
+```bash
+python -m src.dashboard.star_schema_view
+```
+
 Salida:
 
 ```text
 dashboards/airbnb_quality_dashboard.html
+dashboards/star_schema_view.html
 ```
 
 ## Escalabilidad a BI
@@ -104,4 +111,3 @@ Las tablas en `data/gold/star/` pueden importarse directamente a Power BI, Table
 - `fact_reviews.parquet`
 
 Para herramientas que no lean Parquet directamente, se puede agregar export CSV sin cambiar el contrato conceptual del modelo.
-

@@ -12,11 +12,17 @@ Generate the local dashboard:
 python -m src.dashboard.airbnb_dashboard
 ```
 
+Generate the schema view:
+
+```bash
+python -m src.dashboard.star_schema_view
+```
+
 Open:
 
 ```text
 dashboards/airbnb_quality_dashboard.html
+dashboards/star_schema_view.html
 ```
 
 The HTML dashboard is a practical local equivalent of a Power BI/Tableau/Looker report. Its source tables are modeled as facts and dimensions in `data/gold/star/`.
-

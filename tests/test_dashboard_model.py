@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 from src.dashboard.airbnb_dashboard import build_dashboard
+from src.dashboard.star_schema_view import build_schema_view
 from src.modeling.star_schema import build_star_schema
 
 
@@ -76,11 +77,13 @@ def test_star_schema_and_dashboard_are_generated_from_gold_tables(tmp_path: Path
     reviews_path = data_dir / "reviews.parquet"
     star_dir = data_dir / "star"
     output_path = tmp_path / "dashboards" / "airbnb_quality_dashboard.html"
+    schema_view_path = tmp_path / "dashboards" / "star_schema_view.html"
     listings.to_parquet(listings_path, index=False)
     reviews.to_parquet(reviews_path, index=False)
 
     summary = build_star_schema(listings_path, reviews_path, star_dir, review_batch_size=1)
     result = build_dashboard(listings_path, star_dir, output_path)
+    schema_result = build_schema_view(star_dir, schema_view_path)
 
     assert summary["dim_listing_rows"] == 1
     assert summary["fact_reviews_rows"] == 1
@@ -88,4 +91,6 @@ def test_star_schema_and_dashboard_are_generated_from_gold_tables(tmp_path: Path
     assert output_path.exists()
     assert result["output"] == str(output_path)
     assert "Airbnb Marketplace Quality Dashboard" in output_path.read_text(encoding="utf-8")
-
+    assert schema_view_path.exists()
+    assert schema_result["output"] == str(schema_view_path)
+    assert "Airbnb Star Schema View" in schema_view_path.read_text(encoding="utf-8")

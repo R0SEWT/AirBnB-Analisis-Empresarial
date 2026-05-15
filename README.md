@@ -77,6 +77,7 @@ La rama `feature/dashboard` agrega un modelo estrella para BI y un dashboard loc
 ```bash
 python -m src.pipeline.build_star_schema
 python -m src.dashboard.airbnb_dashboard
+python -m src.dashboard.star_schema_view
 ```
 
 Documentacion:
@@ -89,6 +90,7 @@ Dashboard generado:
 
 ```text
 dashboards/airbnb_quality_dashboard.html
+dashboards/star_schema_view.html
 ```
 
 ## Gestión de tareas
