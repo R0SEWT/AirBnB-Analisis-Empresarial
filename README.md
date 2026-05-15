@@ -70,6 +70,27 @@ Interfaz visual generada:
 app/medallion_viewer.html
 ```
 
+## Dashboard
+
+La rama `feature/dashboard` agrega un modelo estrella para BI y un dashboard local escalable a Power BI, Tableau o Looker:
+
+```bash
+python -m src.pipeline.build_star_schema
+python -m src.dashboard.airbnb_dashboard
+```
+
+Documentacion:
+
+```text
+docs/dashboard-model.md
+```
+
+Dashboard generado:
+
+```text
+dashboards/airbnb_quality_dashboard.html
+```
+
 ## Gestión de tareas
 
 Este repo usa Beads para seguimiento de trabajo:
