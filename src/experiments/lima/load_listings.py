@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
-_SCHEMA_PATH = Path(__file__).parents[2] / "configs" / "lima_schema.yaml"
+_SCHEMA_PATH = Path(__file__).parents[3] / "configs" / "lima_schema.yaml"
 
 
 def _load_schema() -> dict:

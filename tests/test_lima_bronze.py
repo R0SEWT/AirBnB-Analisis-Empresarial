@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from src.transformations.bronze import _parse_price
+from src.experiments.lima.bronze import _parse_price
 
 
 def test_parse_price_strips_symbol():

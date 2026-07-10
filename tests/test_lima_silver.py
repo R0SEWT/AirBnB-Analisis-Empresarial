@@ -1,6 +1,6 @@
 import pandas as pd
 
-from src.transformations.silver import run_silver
+from src.experiments.lima.silver import run_silver
 
 
 def _make_bronze(prices, ratings=None, neighbourhoods=None):

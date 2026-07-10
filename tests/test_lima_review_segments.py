@@ -1,8 +1,7 @@
 import numpy as np
-import pytest
 from scipy.sparse import csr_matrix
 
-from src.features.review_segments import auto_label_clusters, clean_text
+from src.experiments.lima.review_segments import auto_label_clusters, clean_text
 
 
 def test_clean_text_strips_html():

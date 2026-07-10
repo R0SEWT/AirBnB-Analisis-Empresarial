@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
-_SCHEMA_PATH = Path(__file__).parents[2] / "configs" / "lima_schema.yaml"
+_SCHEMA_PATH = Path(__file__).parents[3] / "configs" / "lima_schema.yaml"
 
 
 def _load_schema() -> dict:
@@ -26,7 +26,7 @@ def _parse_price(series: pd.Series) -> pd.Series:
 def run_bronze(
     df: pd.DataFrame | None = None, out_path: Path | None = None
 ) -> pd.DataFrame:
-    from src.ingestion.load_listings import load_raw
+    from src.experiments.lima.load_listings import load_raw
 
     schema = _load_schema()
     raw = df if df is not None else load_raw()

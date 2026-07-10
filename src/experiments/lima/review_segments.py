@@ -12,7 +12,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import Normalizer
 
-_SCHEMA_PATH = Path(__file__).parents[2] / "configs" / "lima_schema.yaml"
+_SCHEMA_PATH = Path(__file__).parents[3] / "configs" / "lima_schema.yaml"
 
 _HTML_TAG = re.compile(r"<[^>]+>")
 _NON_ALPHA = re.compile(r"[^a-zA-ZáéíóúñüÁÉÍÓÚÑÜ\s]")

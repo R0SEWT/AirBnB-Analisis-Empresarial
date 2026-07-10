@@ -9,7 +9,7 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-_SCHEMA_PATH = Path(__file__).parents[2] / "configs" / "lima_schema.yaml"
+_SCHEMA_PATH = Path(__file__).parents[3] / "configs" / "lima_schema.yaml"
 
 
 def _load_schema() -> dict:
