@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "AirBnB_Analisis_Empresarial",
+  "project_id": "24451f7d-ee4c-4243-884c-964a585e6991"
+}
