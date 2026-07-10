@@ -1,0 +1,6 @@
+priority_segment,cantidad,porcentaje,accion_recomendada
+Monitoreo bajo,88373,64.69,Seguimiento ligero; priorizar solo si cambia actividad o riesgo.
+Proteger y retener,35801,26.21,"Mantener visibilidad, monitorear calidad y proteger oferta de alto valor."
+Bajo valor pero riesgoso,12392,9.07,"Depurar, corregir datos minimos o mantener monitoreo preventivo."
+Corregir antes de escalar,49,0.04,Aplicar mejoras de calidad/verificacion antes de campanas o mayor exposicion.
+Prioridad critica,0,0.0,Revision Trust & Safety inmediata; corregir confianza antes de impulsar demanda.

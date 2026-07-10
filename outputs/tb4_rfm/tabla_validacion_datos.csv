@@ -1,0 +1,6 @@
+dataset,path,rows,columns
+listings,data/gold/listings.parquet,136615,"listing_id, name, host_id, host_name, room_type, property_type, neighbourhood_cleansed, price, reviews_per_month, number_of_reviews, review_scores_rating, availability_365, _source_file"
+reviews,data/gold/reviews.parquet,5361259,"listing_id, review_id, review_date, comment_length, has_comment, _source_file"
+listing_trust_risk,data/gold/analytics/listing_trust_risk.parquet,136615,"listing_id, country, market, market_label, risk_score, trust_score, risk_segment, primary_risk_driver, recommended_action"
+market_trust_risk_summary,data/gold/analytics/market_trust_risk_summary.parquet,7,"country, market, market_label, listings, avg_risk_score, avg_trust_score, high_risk_listings, critical_risk_listings, avg_rating, avg_observed_reviews, high_risk_rate, critical_risk_rate"
+risk_segment_summary,data/gold/analytics/risk_segment_summary.parquet,3,"risk_segment, listings, avg_risk_score, avg_trust_score, avg_rating, avg_observed_reviews"

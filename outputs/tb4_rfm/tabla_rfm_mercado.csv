@@ -1,0 +1,8 @@
+country,market_label,listings,segmento_dominante,rfm_promedio,risk_score_promedio,high_critical_pct,monetary_proxy_promedio,prioridad_critica
+Japan,Tokyo,27945,Valor medio operativo,10.44451601359814,12.915354446233675,1.32,704329.4783324387,0
+United States,Asheville,2852,Valor medio operativo,10.196704067321178,9.757819074333801,2.98,14488.692145862553,0
+Mexico,Mexico City,27051,Champions / Alto valor activo,9.919337547595283,13.979364903330746,5.73,66673.61579978559,0
+United States,New Orleans,453,Frecuentes de bajo valor,8.313465783664459,16.12560706401766,7.51,0.0,0
+Brazil,Rio de Janeiro,43068,Dormidos,8.22134763629609,19.962812761214824,12.4,9772.569657286153,0
+Spain,Girona / Costa Brava,17069,Valor medio operativo,6.928056710996543,20.989877555802916,9.89,0.0,0
+Spain,Barcelona,18177,Dormidos,6.864664135996039,26.479566485118557,18.56,0.0,0

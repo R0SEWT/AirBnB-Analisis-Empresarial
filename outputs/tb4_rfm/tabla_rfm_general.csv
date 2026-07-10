@@ -1,0 +1,2 @@
+total_listings,listings_con_reviews,reviews_procesadas,min_review_date,max_review_date,reference_date,meses_disponibles,promedio_recency,promedio_frequency,promedio_monetary_proxy,price_missing_rate,price_outlier_rate
+136615,111624,5361259,2010-06-07,2026-02-14,2026-02-15,189,1245.7617757932876,39.243560370383925,160657.92213885736,0.3393551220583391,0.009994016885678197
