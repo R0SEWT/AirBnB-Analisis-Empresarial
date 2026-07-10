@@ -13,7 +13,9 @@ def _load_schema() -> dict:
         return yaml.safe_load(f)
 
 
-def run_silver(df: pd.DataFrame | None = None) -> pd.DataFrame:
+def run_silver(
+    df: pd.DataFrame | None = None, out_path: Path | None = None
+) -> pd.DataFrame:
     schema = _load_schema()
     pct = schema["silver"]["price_outlier_percentile"]
 
@@ -43,7 +45,7 @@ def run_silver(df: pd.DataFrame | None = None) -> pd.DataFrame:
             silver[rating_col] = silver[rating_col].fillna(median_by_neighbourhood)
             silver[rating_col] = silver[rating_col].fillna(silver[rating_col].median())
 
-    out_path = Path(schema["silver"]["output"])
+    out_path = out_path or Path(schema["silver"]["output"])
     out_path.parent.mkdir(parents=True, exist_ok=True)
     silver.to_parquet(out_path, index=False)
     print(f"Silver written: {out_path} ({len(silver):,} rows)")

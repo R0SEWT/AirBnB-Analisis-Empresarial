@@ -22,21 +22,21 @@ def _make_bronze(prices, ratings=None, neighbourhoods=None):
     )
 
 
-def test_silver_removes_zero_price():
+def test_silver_removes_zero_price(tmp_path):
     df = _make_bronze([0.0, 50.0, 100.0])
-    result = run_silver(df)
+    result = run_silver(df, out_path=tmp_path / "silver.parquet")
     assert (result["price"] > 0).all()
 
 
-def test_silver_removes_duplicates():
+def test_silver_removes_duplicates(tmp_path):
     df = _make_bronze([50.0, 50.0, 50.0])
     df["id"] = [1, 1, 2]
-    result = run_silver(df)
+    result = run_silver(df, out_path=tmp_path / "silver.parquet")
     assert len(result) == 2
 
 
-def test_silver_imputes_reviews_per_month():
+def test_silver_imputes_reviews_per_month(tmp_path):
     ratings = [1.5, None, 2.0]
     df = _make_bronze([50.0, 60.0, 70.0], ratings=ratings)
-    result = run_silver(df)
+    result = run_silver(df, out_path=tmp_path / "silver.parquet")
     assert result["reviews_per_month"].isna().sum() == 0

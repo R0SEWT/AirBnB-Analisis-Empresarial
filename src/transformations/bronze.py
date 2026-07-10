@@ -23,7 +23,9 @@ def _parse_price(series: pd.Series) -> pd.Series:
     )
 
 
-def run_bronze(df: pd.DataFrame | None = None) -> pd.DataFrame:
+def run_bronze(
+    df: pd.DataFrame | None = None, out_path: Path | None = None
+) -> pd.DataFrame:
     from src.ingestion.load_listings import load_raw
 
     schema = _load_schema()
@@ -45,7 +47,7 @@ def run_bronze(df: pd.DataFrame | None = None) -> pd.DataFrame:
         if bool_col in bronze.columns:
             bronze[bool_col] = bronze[bool_col].map({"t": True, "f": False})
 
-    out_path = Path(schema["bronze"]["output"])
+    out_path = out_path or Path(schema["bronze"]["output"])
     out_path.parent.mkdir(parents=True, exist_ok=True)
     bronze.to_parquet(out_path, index=False)
     print(f"Bronze written: {out_path} ({len(bronze):,} rows)")

@@ -44,3 +44,19 @@ segmentation:
       - availability_365
     onehot:
       - room_type
+
+review_segmentation:
+  raw_reviews: data/bronze/mexico/reviews.csv
+  output_segments: data/gold/mart_review_segments.parquet
+  output_labels: data/gold/review_segment_labels.csv
+  tfidf:
+    max_features: 5000
+    min_df: 2
+    max_df: 0.9
+    ngram_range: [1, 2]
+    stop_words: english
+  svd_components: 100
+  k_min: 2
+  k_max: 7
+  random_state: 42
+  top_label_terms: 5

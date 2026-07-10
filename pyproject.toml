@@ -10,6 +10,7 @@ dependencies = [
     "seaborn>=0.13",
     "jupyter>=1.0",
     "ipykernel>=6.0",
+    "wordcloud>=1.9",
 ]
 
 [tool.uv]
