@@ -1,10 +1,12 @@
 [project]
 name = "airbnb-analytics"
 version = "0.1.0"
+description = "Medallion data pipelines for an Airbnb business analytics project."
+readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "pandas>=2.0",
-    "pyarrow>=14.0",
+    "pandas>=2.2",
+    "pyarrow>=15.0",
     "scikit-learn>=1.4",
     "matplotlib>=3.8",
     "seaborn>=0.13",
@@ -13,8 +15,26 @@ dependencies = [
     "wordcloud>=1.9",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
 [tool.uv]
 dev-dependencies = ["ruff>=0.4", "pytest>=8.0"]
 
+[tool.ruff]
+line-length = 120
+
 [tool.ruff.lint]
 select = ["E", "F", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+# Módulos con templates HTML/JS embebidos: la longitud de línea no aplica
+"src/dashboard/airbnb_dashboard.py" = ["E501"]
+"src/dashboard/star_schema_view.py" = ["E501"]
+"src/visualization/medallion_view.py" = ["E501"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

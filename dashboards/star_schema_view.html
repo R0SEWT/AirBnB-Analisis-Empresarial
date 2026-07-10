@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Airbnb Star Schema View</title>
+  <style>
+    :root {
+      --bg: #f6f7f3;
+      --panel: #ffffff;
+      --ink: #172026;
+      --muted: #5f6d75;
+      --line: #d8ded6;
+      --fact: #2f6f9f;
+      --dim: #3d7c59;
+      --accent: #d9485f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+    header {
+      padding: 26px 32px 18px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+    }
+    h1 { margin: 0 0 8px; font-size: 30px; letter-spacing: 0; }
+    header p { margin: 0; color: var(--muted); line-height: 1.5; max-width: 980px; }
+    main { padding: 24px 32px 36px; display: grid; gap: 20px; }
+    .schema {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) minmax(320px, 1.05fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .lane {
+      display: grid;
+      gap: 14px;
+    }
+    .lane-title {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+    .table-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-left: 8px solid var(--dim);
+      border-radius: 8px;
+      padding: 16px;
+      scroll-margin-top: 16px;
+    }
+    .table-card.fact { border-left-color: var(--fact); }
+    .table-header {
+      display: grid;
+      gap: 5px;
+      margin-bottom: 8px;
+    }
+    .table-header span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .table-header strong { font-size: 20px; }
+    .table-card p { color: var(--muted); margin: 0 0 12px; line-height: 1.4; }
+    dl {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 10px;
+      margin: 0 0 12px;
+    }
+    dt { color: var(--muted); font-size: 12px; text-transform: uppercase; font-weight: 700; }
+    dd { margin: 4px 0 0; font-weight: 700; }
+    code {
+      background: #edf0ed;
+      border-radius: 4px;
+      padding: 2px 5px;
+      font-size: 12px;
+    }
+    summary { cursor: pointer; color: var(--ink); font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border-bottom: 1px solid var(--line); text-align: left; padding: 7px 4px; font-size: 13px; }
+    th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+    .relationships {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .relationships h2 { margin: 0 0 12px; font-size: 19px; }
+    .relationships ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 9px;
+    }
+    .relationships li {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      padding: 9px 10px;
+      background: #f8faf8;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+    a { color: var(--fact); text-decoration: none; font-weight: 700; }
+    footer { color: var(--muted); padding: 0 32px 24px; font-size: 13px; }
+    @media (max-width: 900px) {
+      header, main, footer { padding-left: 16px; padding-right: 16px; }
+      .schema { grid-template-columns: 1fr; }
+      dl { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Airbnb Star Schema View</h1>
+    <p>Vista del modelo ubicado en <code>data\gold\star</code>. Las dimensiones describen entidades de negocio y las tablas fact concentran medidas para dashboard, Power BI, Tableau o Looker.</p>
+  </header>
+  <main>
+    <section class="schema" aria-label="Modelo estrella">
+      <div class="lane">
+        <h2 class="lane-title">Dimensiones</h2>
+        
+    <article class="table-card dimension" id="dim_listing">
+      <div class="table-header">
+        <span>Dimension</span>
+        <strong>dim_listing</strong>
+      </div>
+      <p>Atributos descriptivos del alojamiento.</p>
+      <dl>
+        <div><dt>Clave</dt><dd><code>listing_id</code></dd></div>
+        <div><dt>Filas</dt><dd>136,615</dd></div>
+      </dl>
+      <details>
+        <summary>Columnas (11)</summary>
+        <table>
+          <thead><tr><th>Campo</th><th>Tipo</th></tr></thead>
+          <tbody><tr>
+          <td><code>listing_id</code></td>
+          <td>int64</td>
+        </tr>
+<tr>
+          <td><code>listing_url</code></td>
+          <td>string</td>
+        </tr>
+<tr>
+          <td><code>name</code></td>
+          <td>string</td>
+        </tr>
+<tr>
+          <td><code>description</code></td>
+          <td>string</td>
+        </tr>
+<tr>
+          <td><code>property_type</code></td>
+          <td>string</td>
+        </tr>
+<tr>
+          <td><code>room_type</code></td>
+          <td>string</td>
+        </tr>
+<tr>
+          <td><code>accommodates</code></td>
+          <td>int64</td>
+        </tr>
+<tr>
+          <td><code>bathrooms</code></td>
+          <td>double</td>
+        </tr>
+<tr>
+          <td><code>bathrooms_text</code></td>
+          <td>string</td>
+        </tr>
+<tr>
+          <td><code>bedrooms</code></td>
+          <td>double</td>
+        </tr>
+<tr>
+          <td><code>beds</code></td>
+          <td>double</td>
+        </tr></tbody>
+        </table>
+      </details>
+    </article>
+    
+
+    <article class="table-card dimension" id="dim_host">
+      <div class="table-header">
+        <span>Dimension</span>
+        <strong>dim_host</strong>
+      </div>
+      <p>Perfil del host y banderas de confianza.</p>
+      <dl>
+        <div><dt>Clave</dt><dd><code>host_id</code></dd></div>
+        <div><dt>Filas</dt><dd>57,566</dd></div>
+      </dl>
+      <details>
+        <summary>Columnas (7)</summary>
+        <table>
+          <thead><tr><th>Campo</th><th>Tipo</th></tr></thead>
+          <tbody><tr>
+          <td><code>host_id</code></td>
+          <td>int64</td>
+        </tr>
+<tr>
+          <td><code>host_name</code></td>
+          <td>string</td>
+        </tr>
+<tr>
+          <td><code>host_since</code></td>
+          <td>timestamp[ns]</td>
+        </tr>
+<tr>
+          <td><code>host_is_superhost</code></td>
+          <td>bool</td>
+        </tr>
+<tr>
+          <td><code>host_identity_verified</code></td>
+          <td>bool</td>
+        </tr>
+<tr>
+          <td><code>host_response_rate</code></td>
+          <td>double</td>
+        </tr>
+<tr>
+          <td><code>host_acceptance_rate</code></td>
+          <td>double</td>
+        </tr></tbody>
+        </table>
+      </details>
+    </article>
+    
+
+    <article class="table-card dimension" id="dim_location">
+      <div class="table-header">
+        <span>Dimension</span>
+        <strong>dim_location</strong>
+      </div>
+      <p>Jerarquia geografica normalizada.</p>
+      <dl>
+        <div><dt>Clave</dt><dd><code>location_key</code></dd></div>
+        <div><dt>Filas</dt><dd>1,957</dd></div>
+      </dl>
+      <details>
+        <summary>Columnas (4)</summary>
+        <table>
+          <thead><tr><th>Campo</th><th>Tipo</th></tr></thead>
+          <tbody><tr>
+          <td><code>location_key</code></td>
+          <td>int64</td>
+        </tr>
+<tr>
+          <td><code>neighbourhood</code></td>
+          <td>string</td>
+        </tr>
+<tr>
+          <td><code>neighbourhood_cleansed</code></td>
+          <td>string</td>
+        </tr>
+<tr>
+          <td><code>neighbourhood_group_cleansed</code></td>
+          <td>string</td>
+        </tr></tbody>
+        </table>
+      </details>
+    </article>
+    
+
+    <article class="table-card dimension" id="dim_date">
+      <div class="table-header">
+        <span>Dimension</span>
+        <strong>dim_date</strong>
+      </div>
+      <p>Calendario comun para snapshots y reviews.</p>
+      <dl>
+        <div><dt>Clave</dt><dd><code>date_key</code></dd></div>
+        <div><dt>Filas</dt><dd>5,367</dd></div>
+      </dl>
+      <details>
+        <summary>Columnas (9)</summary>
+        <table>
+          <thead><tr><th>Campo</th><th>Tipo</th></tr></thead>
+          <tbody><tr>
+          <td><code>date_key</code></td>
+          <td>int64</td>
+        </tr>
+<tr>
+          <td><code>date</code></td>
+          <td>timestamp[ns]</td>
+        </tr>
+<tr>
+          <td><code>year</code></td>
+          <td>int32</td>
+        </tr>
+<tr>
+          <td><code>quarter</code></td>
+          <td>int32</td>
+        </tr>
+<tr>
+          <td><code>month</code></td>
+          <td>int32</td>
+        </tr>
+<tr>
+          <td><code>month_name</code></td>
+          <td>string</td>
+        </tr>
+<tr>
+          <td><code>year_month</code></td>
+          <td>string</td>
+        </tr>
+<tr>
+          <td><code>day</code></td>
+          <td>int32</td>
+        </tr>
+<tr>
+          <td><code>day_of_week</code></td>
+          <td>string</td>
+        </tr></tbody>
+        </table>
+      </details>
+    </article>
+    
+      </div>
+      <div class="lane">
+        <h2 class="lane-title">Hechos</h2>
+        
+    <article class="table-card fact" id="fact_listing_snapshot">
+      <div class="table-header">
+        <span>Fact</span>
+        <strong>fact_listing_snapshot</strong>
+      </div>
+      <p>Medidas actuales por listing: precio, disponibilidad y rating.</p>
+      <dl>
+        <div><dt>Clave</dt><dd><code>listing_id</code></dd></div>
+        <div><dt>Filas</dt><dd>136,615</dd></div>
+      </dl>
+      <details>
+        <summary>Columnas (12)</summary>
+        <table>
+          <thead><tr><th>Campo</th><th>Tipo</th></tr></thead>
+          <tbody><tr>
+          <td><code>listing_id</code></td>
+          <td>int64</td>
+        </tr>
+<tr>
+          <td><code>host_id</code></td>
+          <td>int64</td>
+        </tr>
+<tr>
+          <td><code>location_key</code></td>
+          <td>double</td>
+        </tr>
+<tr>
+          <td><code>price</code></td>
+          <td>double</td>
+        </tr>
+<tr>
+          <td><code>price_per_accommodates</code></td>
+          <td>double</td>
+        </tr>
+<tr>
+          <td><code>minimum_nights</code></td>
+          <td>double</td>
+        </tr>
+<tr>
+          <td><code>maximum_nights</code></td>
+          <td>double</td>
+        </tr>
+<tr>
+          <td><code>availability_365</code></td>
+          <td>int64</td>
+        </tr>
+<tr>
+          <td><code>number_of_reviews</code></td>
+          <td>int64</td>
+        </tr>
+<tr>
+          <td><code>review_scores_rating</code></td>
+          <td>double</td>
+        </tr>
+<tr>
+          <td><code>reviews_per_month</code></td>
+          <td>double</td>
+        </tr>
+<tr>
+          <td><code>last_scraped_date_key</code></td>
+          <td>int64</td>
+        </tr></tbody>
+        </table>
+      </details>
+    </article>
+    
+
+    <article class="table-card fact" id="fact_reviews">
+      <div class="table-header">
+        <span>Fact</span>
+        <strong>fact_reviews</strong>
+      </div>
+      <p>Eventos de reviews con fecha, listing y longitud de comentario.</p>
+      <dl>
+        <div><dt>Clave</dt><dd><code>review_id</code></dd></div>
+        <div><dt>Filas</dt><dd>5,361,259</dd></div>
+      </dl>
+      <details>
+        <summary>Columnas (6)</summary>
+        <table>
+          <thead><tr><th>Campo</th><th>Tipo</th></tr></thead>
+          <tbody><tr>
+          <td><code>review_id</code></td>
+          <td>int64</td>
+        </tr>
+<tr>
+          <td><code>listing_id</code></td>
+          <td>int64</td>
+        </tr>
+<tr>
+          <td><code>review_date_key</code></td>
+          <td>int64</td>
+        </tr>
+<tr>
+          <td><code>reviewer_id</code></td>
+          <td>int64</td>
+        </tr>
+<tr>
+          <td><code>comment_length</code></td>
+          <td>int32</td>
+        </tr>
+<tr>
+          <td><code>has_comment</code></td>
+          <td>bool</td>
+        </tr></tbody>
+        </table>
+      </details>
+    </article>
+    
+      </div>
+    </section>
+    <section class="relationships">
+      <h2>Relaciones</h2>
+      <ul><li>
+          <a href="#dim_listing">dim_listing</a>
+          <code>listing_id</code>
+          <span>-></span>
+          <a href="#fact_listing_snapshot">fact_listing_snapshot</a>
+          <code>listing_id</code>
+        </li>
+<li>
+          <a href="#dim_listing">dim_listing</a>
+          <code>listing_id</code>
+          <span>-></span>
+          <a href="#fact_reviews">fact_reviews</a>
+          <code>listing_id</code>
+        </li>
+<li>
+          <a href="#dim_host">dim_host</a>
+          <code>host_id</code>
+          <span>-></span>
+          <a href="#fact_listing_snapshot">fact_listing_snapshot</a>
+          <code>host_id</code>
+        </li>
+<li>
+          <a href="#dim_location">dim_location</a>
+          <code>location_key</code>
+          <span>-></span>
+          <a href="#fact_listing_snapshot">fact_listing_snapshot</a>
+          <code>location_key</code>
+        </li>
+<li>
+          <a href="#dim_date">dim_date</a>
+          <code>date_key</code>
+          <span>-></span>
+          <a href="#fact_listing_snapshot">fact_listing_snapshot</a>
+          <code>last_scraped_date_key</code>
+        </li>
+<li>
+          <a href="#dim_date">dim_date</a>
+          <code>date_key</code>
+          <span>-></span>
+          <a href="#fact_reviews">fact_reviews</a>
+          <code>review_date_key</code>
+        </li></ul>
+    </section>
+  </main>
+  <footer>Generado: 2026-05-15T04:07:48.890514+00:00 | Resumen: data\gold\star\star_schema_summary.json</footer>
+</body>
+</html>

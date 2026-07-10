@@ -1,0 +1,2 @@
+"""Dashboard generation utilities."""
+
