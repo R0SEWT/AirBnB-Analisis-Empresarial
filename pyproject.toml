@@ -32,6 +32,7 @@ select = ["E", "F", "I"]
 [tool.ruff.lint.per-file-ignores]
 # Módulos con templates HTML/JS embebidos: la longitud de línea no aplica
 "src/dashboard/airbnb_dashboard.py" = ["E501"]
+"src/dashboard/trust_risk_dashboard.py" = ["E501"]
 "src/dashboard/star_schema_view.py" = ["E501"]
 "src/visualization/medallion_view.py" = ["E501"]
 

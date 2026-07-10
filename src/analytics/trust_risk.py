@@ -40,7 +40,8 @@ def default_outputs(output_dir: Path) -> TrustRiskOutputs:
 
 def normalize_bool(series: pd.Series) -> pd.Series:
     normalized = series.astype("string").str.lower().str.strip()
-    return normalized.map({"true": True, "t": True, "1": True, "false": False, "f": False, "0": False}).astype("boolean").fillna(False)
+    mapping = {"true": True, "t": True, "1": True, "false": False, "f": False, "0": False}
+    return normalized.map(mapping).astype("boolean").fillna(False)
 
 
 def market_name(listings: pd.DataFrame) -> pd.Series:
@@ -112,7 +113,9 @@ def build_review_features(
 def price_outlier_flag(listings: pd.DataFrame) -> pd.Series:
     group_columns = ["market", "room_type"]
     prices = pd.to_numeric(listings["price"], errors="coerce").astype("float64")
-    quantiles = prices.groupby([listings[column] for column in group_columns]).transform(lambda values: values.quantile(0.95))
+    quantiles = prices.groupby([listings[column] for column in group_columns]).transform(
+        lambda values: values.quantile(0.95)
+    )
     return ((prices.notna()) & (prices > quantiles.astype("float64"))).fillna(False)
 
 
